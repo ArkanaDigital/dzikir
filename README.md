@@ -37,7 +37,7 @@ A Progressive Web App (PWA) built with React, TypeScript, and Tailwind CSS for d
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/arkanadigital/dzikir-app.git
+   git clone https://github.com/arkanadigital/dzikir.git
    cd dzikir-app
    ```
 
