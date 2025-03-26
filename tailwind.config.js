@@ -1,0 +1,17 @@
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+  theme: {
+    extend: {
+      fontFamily: {
+        arabic: ['Amiri', 'serif'],
+        latin: ['Crimson Text', 'serif'],
+      },
+      container: {
+        center: true,
+        padding: '1rem',
+      },
+    },
+  },
+  plugins: [],
+};
