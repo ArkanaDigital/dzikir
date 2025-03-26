@@ -1,5 +1,4 @@
 import React from 'react';
-import { useSwipeable } from 'react-swipeable';
 import { Sun, Moon, Star, Layers as Prayer } from 'lucide-react';
 import { DzikirCard } from './components/DzikirCard';
 import { CounterCard } from './components/CounterCard';
@@ -26,27 +25,21 @@ function App() {
     if (currentIndex < totalDzikirs - 1) {
       setCurrentIndex(currentIndex + 1);
     } else {
-      // Reset all counters and progress when reaching the last dzikir
       resetAllCounters();
       setCurrentIndex(0);
     }
   };
 
-  const handlers = useSwipeable({
-    onSwipedLeft: handleNext,
-    onSwipedRight: () => {
-      if (currentIndex > 0) {
-        setCurrentIndex(currentIndex - 1);
-      }
-    },
-    preventDefaultTouchmoveEvent: true,
-    trackMouse: true
-  });
+  const handlePrevious = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#1E4C94] to-[#361F75]">
       <div className="relative min-h-screen text-white">
-        {/* Header with Progress and Counter */}
+        {/* Header with Progress */}
         <div className="fixed top-0 left-0 right-0 z-10">
           <div className="h-1 bg-white/10">
             <div 
@@ -67,15 +60,18 @@ function App() {
 
         {/* Main Content */}
         <div className="pt-24 pb-24">
-          <div className="container mx-auto px-4" {...handlers}>
-            {currentDzikirs[currentIndex] && (
-              <DzikirCard
-                dzikir={currentDzikirs[currentIndex]}
-                total={totalDzikirs}
-                current={currentIndex + 1}
-                onComplete={handleNext}
-              />
-            )}
+          <div className="container mx-auto px-4">
+            <div className="relative overflow-hidden">
+              {currentDzikirs[currentIndex] && (
+                <DzikirCard
+                  dzikir={currentDzikirs[currentIndex]}
+                  total={totalDzikirs}
+                  current={currentIndex + 1}
+                  onComplete={handleNext}
+                  onPrevious={handlePrevious}
+                />
+              )}
+            </div>
           </div>
         </div>
 

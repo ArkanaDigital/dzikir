@@ -10,9 +10,10 @@ interface DzikirCardProps {
   total: number;
   current: number;
   onComplete: () => void;
+  onPrevious: () => void;
 }
 
-export function DzikirCard({ dzikir, onComplete }: DzikirCardProps) {
+export function DzikirCard({ dzikir, onComplete, onPrevious }: DzikirCardProps) {
   const { incrementCounter, resetCounter, tabStates, activeTab } = useDzikirStore();
   const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
   const currentCount = tabStates[activeTab].counters[dzikir.id] || 0;
@@ -57,7 +58,7 @@ export function DzikirCard({ dzikir, onComplete }: DzikirCardProps) {
     },
     onSwipedRight: () => {
       setSwipeDirection('right');
-      setTimeout(onComplete, 150);
+      setTimeout(onPrevious, 150);
     },
     preventDefaultTouchmoveEvent: true,
     trackMouse: true,
@@ -86,7 +87,7 @@ export function DzikirCard({ dzikir, onComplete }: DzikirCardProps) {
       <motion.div 
         {...handlers}
         key={dzikir.id}
-        className="w-full h-full"
+        className="w-full"
         onClick={handleCount}
         custom={swipeDirection}
         variants={variants}
@@ -98,12 +99,12 @@ export function DzikirCard({ dzikir, onComplete }: DzikirCardProps) {
           opacity: { duration: 0.1 }
         }}
       >
-        <div className="relative bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg rounded-2xl p-6 shadow-lg h-full overflow-hidden">
+        <div className="relative bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg rounded-2xl p-6 shadow-lg">
           {/* Decorative elements */}
           <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-full blur-3xl -mr-20 -mt-20" />
           <div className="absolute bottom-0 left-0 w-40 h-40 bg-gradient-to-tr from-blue-400/10 to-indigo-500/10 rounded-full blur-3xl -ml-20 -mb-20" />
           
-          <div className="relative flex flex-col h-full">
+          <div className="relative">
             {/* Title with gradient background */}
             <div className="bg-gradient-to-r from-white/20 to-white/10 rounded-xl p-4 mb-6">
               <h2 className="text-lg font-medium">{dzikir.title}</h2>
@@ -111,7 +112,7 @@ export function DzikirCard({ dzikir, onComplete }: DzikirCardProps) {
             
             {/* Arabic Text */}
             <motion.div 
-              className="text-center flex-1"
+              className="text-center"
               initial={{ scale: 0.95 }}
               animate={{ scale: 1 }}
               transition={{ duration: 0.2 }}
