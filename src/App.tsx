@@ -14,12 +14,23 @@ const tabs: { id: DzikirType; label: string; icon: React.ReactNode }[] = [
 ];
 
 function App() {
-  const { activeTab, setActiveTab, getCurrentIndex, setCurrentIndex, resetAllCounters } = useDzikirStore();
+  const { activeTab, setActiveTab, getCurrentIndex, setCurrentIndex, resetAllCounters, tabStates } = useDzikirStore();
   const currentIndex = getCurrentIndex();
-
   const currentDzikirs = dzikirData[activeTab];
   const totalDzikirs = currentDzikirs.length;
-  const progress = ((currentIndex + 1) / totalDzikirs) * 100;
+
+  // Calculate progress based on current page position
+  const progress = Math.min(((currentIndex + 1) / totalDzikirs) * 100, 100);
+
+  // Check if all dzikirs up to current index are complete
+  const isCurrentSectionComplete = React.useMemo(() => {
+    const currentDzikir = currentDzikirs[currentIndex];
+    if (!currentDzikir) return false;
+    
+    const currentCount = tabStates[activeTab].counters[currentDzikir.id] || 0;
+    const targetCount = parseInt(currentDzikir.count, 10);
+    return currentCount >= targetCount;
+  }, [currentIndex, currentDzikirs, activeTab, tabStates]);
 
   const handleNext = () => {
     if (currentIndex < totalDzikirs - 1) {
@@ -36,18 +47,30 @@ function App() {
     }
   };
 
+  const handleTabChange = (newTab: DzikirType) => {
+    if (newTab !== activeTab) {
+      setActiveTab(newTab);
+      setCurrentIndex(0); // Reset index when changing tabs
+      resetAllCounters(); // Reset counters when changing tabs
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#1E4C94] to-[#361F75]">
       <div className="relative min-h-screen text-white">
-        {/* Header with Progress */}
-        <div className="fixed top-0 left-0 right-0 z-10">
-          <div className="h-1 bg-white/10">
+        {/* Header - Fixed position */}
+        <div className="fixed top-0 left-0 right-0 z-50">
+          <div className="h-2 bg-gradient-to-r from-emerald-500/20 to-emerald-600/20 backdrop-blur-sm border-b border-white/5">
             <div 
-              className="h-full bg-gradient-to-r from-white to-white/80 transition-all duration-300 ease-out"
+              className={`h-full transition-all duration-300 ease-out ${
+                isCurrentSectionComplete 
+                  ? 'bg-emerald-400/60' 
+                  : 'bg-emerald-300/40'
+              }`}
               style={{ width: `${progress}%` }}
             />
           </div>
-          <div className="bg-white/5 backdrop-blur-lg">
+          <div className="bg-gradient-to-b from-black/25 to-black/20 backdrop-blur-xl border-b border-white/10">
             <div className="container mx-auto">
               {currentDzikirs[currentIndex] && (
                 <CounterCard 
@@ -58,41 +81,37 @@ function App() {
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className="pt-24 pb-24">
-          <div className="container mx-auto px-4">
-            <div className="relative overflow-hidden">
-              {currentDzikirs[currentIndex] && (
-                <DzikirCard
-                  dzikir={currentDzikirs[currentIndex]}
-                  total={totalDzikirs}
-                  current={currentIndex + 1}
-                  onComplete={handleNext}
-                  onPrevious={handlePrevious}
-                />
-              )}
-            </div>
+        {/* Main Content Area - Fixed spacing from header and footer */}
+        <div className="fixed inset-0 pt-[calc(96px+1vh)] pb-[calc(80px+2vh)] overflow-hidden">
+          <div className="h-full">
+            {currentDzikirs[currentIndex] && (
+              <DzikirCard
+                dzikir={currentDzikirs[currentIndex]}
+                total={totalDzikirs}
+                current={currentIndex + 1}
+                onComplete={handleNext}
+                onPrevious={handlePrevious}
+              />
+            )}
           </div>
         </div>
 
-        {/* Bottom Navigation */}
-        <div className="fixed bottom-0 left-0 right-0 h-20 bg-white/10 backdrop-blur-lg border-t border-white/10">
-          <div className="container h-full">
-            <div className="flex h-full justify-around items-center px-2">
+        {/* Footer Navigation - Fixed position */}
+        <div className="fixed bottom-0 left-0 right-0 z-50 h-20 bg-gradient-to-b from-black/25 to-black/20 backdrop-blur-xl border-t border-white/10">
+          <div className="h-full max-w-lg mx-auto px-4">
+            <div className="flex h-full justify-between items-center">
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
-                  className={`flex flex-col items-center py-3 px-6 rounded-xl transition-all duration-300 ${
+                  className={`flex flex-col items-center justify-center h-14 w-14 rounded-xl transition-all duration-300 ${
                     activeTab === tab.id
-                      ? 'text-white bg-white/20 scale-110 shadow-lg'
-                      : 'text-white/60 hover:text-white hover:bg-white/10'
+                      ? 'text-white bg-white/20 shadow-lg shadow-black/50'
+                      : 'text-white/70 hover:text-white hover:bg-white/10'
                   }`}
-                  onClick={() => {
-                    setActiveTab(tab.id);
-                  }}
+                  onClick={() => handleTabChange(tab.id)}
                 >
-                  <div className="mb-1.5">{tab.icon}</div>
-                  <span className="text-sm font-medium">{tab.label}</span>
+                  <div className="mb-0.5">{tab.icon}</div>
+                  <span className="text-[10px] font-medium">{tab.label}</span>
                 </button>
               ))}
             </div>

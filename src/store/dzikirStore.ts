@@ -18,20 +18,31 @@ interface DzikirStore {
   getCurrentIndex: () => number;
 }
 
-const initialTabState: TabState = {
+const initialTabState = (type: DzikirType): TabState => ({
   currentIndex: 0,
   counters: {},
-};
+});
 
 export const useDzikirStore = create<DzikirStore>((set, get) => ({
   activeTab: 'pagi',
   tabStates: {
-    pagi: { ...initialTabState },
-    petang: { ...initialTabState },
-    sholat: { ...initialTabState },
-    ramadhan: { ...initialTabState },
+    pagi: initialTabState('pagi'),
+    petang: initialTabState('petang'),
+    sholat: initialTabState('sholat'),
+    ramadhan: initialTabState('ramadhan'),
   },
-  setActiveTab: (tab) => set({ activeTab: tab }),
+  setActiveTab: (tab) => set((state) => {
+    // Only create a new state if the tab is actually changing
+    if (tab === state.activeTab) return state;
+    
+    return {
+      activeTab: tab,
+      tabStates: {
+        ...state.tabStates,
+        [tab]: state.tabStates[tab] || initialTabState(tab)
+      }
+    };
+  }),
   incrementCounter: (id, maxCount) => set((state) => {
     const currentTab = state.activeTab;
     const currentCount = state.tabStates[currentTab].counters[id] || 0;

@@ -12,3 +12,56 @@
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
 }
+
+/* Swiper Styles */
+.dzikir-swiper {
+  width: 90%;
+  height: 100%;
+  margin: 0 auto;
+  padding: 10px 0;
+}
+
+.swiper-slide {
+  height: 100%;
+  border-radius: 18px;
+  background: transparent;
+  transition: transform 400ms ease;
+}
+
+/* Prevent white flash during swipe */
+.swiper-wrapper {
+  background: transparent !important;
+  align-items: center;
+}
+
+/* Glass effect for cards */
+.glass-card {
+  @apply backdrop-blur-xl bg-gradient-to-br from-white/10 to-white/5 border border-white/10;
+}
+
+/* Ensure content is scrollable within cards */
+.card-content {
+  height: 100%;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Hide scrollbars but keep functionality */
+.card-content {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.card-content::-webkit-scrollbar {
+  display: none;
+}
+
+/* Slide transition effects */
+.swiper-slide-active {
+  transform: scale(1);
+}
+
+.swiper-slide-prev,
+.swiper-slide-next {
+  transform: scale(0.95);
+}
